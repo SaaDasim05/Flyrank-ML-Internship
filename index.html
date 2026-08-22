@@ -1,0 +1,1164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="description"
+        content="Research paper on machine-learning-based content refresh prioritization using the FlyRank ML Internship dataset."
+    >
+
+    <title>Can Machine Learning Improve Content Refresh Prioritization?</title>
+
+    <style>
+        :root {
+            --bg: #f5f7fb;
+            --surface: #ffffff;
+            --surface-soft: #f0f3f8;
+            --text: #182230;
+            --muted: #667085;
+            --border: #dfe4ec;
+            --accent: #2563eb;
+            --accent-dark: #1d4ed8;
+            --success: #15803d;
+            --warning: #b45309;
+            --danger: #b91c1c;
+            --shadow: 0 12px 35px rgba(15, 23, 42, 0.08);
+            --radius: 18px;
+            --max-width: 1120px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family:
+                Inter,
+                ui-sans-serif,
+                system-ui,
+                -apple-system,
+                BlinkMacSystemFont,
+                "Segoe UI",
+                sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        a {
+            color: var(--accent);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        img {
+            max-width: 100%;
+            display: block;
+        }
+
+        .container {
+            width: min(100% - 40px, var(--max-width));
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(255, 255, 255, 0.94);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            min-height: 68px;
+            gap: 24px;
+        }
+
+        .brand {
+            font-weight: 800;
+            color: var(--text);
+            letter-spacing: -0.02em;
+            white-space: nowrap;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 18px;
+            flex-wrap: wrap;
+            justify-content: flex-end;
+        }
+
+        .nav-links a {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        .nav-links a:hover {
+            color: var(--text);
+        }
+
+        /* Hero */
+
+        .hero {
+            padding: 90px 0 70px;
+            background:
+                radial-gradient(circle at top right, rgba(37, 99, 235, 0.12), transparent 35%),
+                linear-gradient(180deg, #ffffff 0%, #f5f7fb 100%);
+        }
+
+        .eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 12px;
+            border: 1px solid #cdd9f6;
+            border-radius: 999px;
+            background: #eef4ff;
+            color: var(--accent-dark);
+            font-weight: 700;
+            font-size: 0.82rem;
+            margin-bottom: 22px;
+        }
+
+        h1 {
+            max-width: 900px;
+            font-size: clamp(2.5rem, 6vw, 4.8rem);
+            line-height: 1.04;
+            letter-spacing: -0.05em;
+            margin-bottom: 24px;
+        }
+
+        .hero-subtitle {
+            max-width: 820px;
+            font-size: 1.18rem;
+            color: var(--muted);
+            margin-bottom: 32px;
+        }
+
+        .hero-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .pill {
+            padding: 9px 14px;
+            border-radius: 999px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            color: var(--muted);
+            font-size: 0.9rem;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.03);
+        }
+
+        /* Layout */
+
+        main {
+            padding: 56px 0 80px;
+        }
+
+        section {
+            scroll-margin-top: 90px;
+            margin-bottom: 46px;
+        }
+
+        .section-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 40px;
+            box-shadow: var(--shadow);
+        }
+
+        .section-number {
+            color: var(--accent);
+            font-weight: 800;
+            font-size: 0.86rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+
+        h2 {
+            font-size: clamp(1.8rem, 3vw, 2.6rem);
+            line-height: 1.15;
+            letter-spacing: -0.035em;
+            margin-bottom: 18px;
+        }
+
+        h3 {
+            font-size: 1.2rem;
+            margin: 28px 0 10px;
+        }
+
+        p {
+            margin-bottom: 16px;
+        }
+
+        .lead {
+            font-size: 1.12rem;
+            color: #344054;
+        }
+
+        /* Abstract */
+
+        .abstract {
+            border-left: 4px solid var(--accent);
+            padding: 22px 24px;
+            background: var(--surface-soft);
+            border-radius: 0 14px 14px 0;
+            margin-top: 26px;
+        }
+
+        /* Stats */
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 14px;
+            margin: 30px 0;
+        }
+
+        .stat {
+            padding: 24px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 850;
+            letter-spacing: -0.04em;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        /* Cards */
+
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin-top: 22px;
+        }
+
+        .info-card {
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 24px;
+        }
+
+        .info-card strong {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        /* Tables */
+
+        .table-wrap {
+            overflow-x: auto;
+            margin: 22px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--surface);
+            min-width: 620px;
+        }
+
+        th,
+        td {
+            padding: 15px 16px;
+            border-bottom: 1px solid var(--border);
+            text-align: left;
+        }
+
+        th {
+            background: var(--surface-soft);
+            font-weight: 750;
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Result cards */
+
+        .result-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 18px;
+            margin: 24px 0;
+        }
+
+        .result-card {
+            padding: 28px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+
+        .result-card.baseline {
+            background: #fff7ed;
+        }
+
+        .result-card.model {
+            background: #eff6ff;
+        }
+
+        .result-number {
+            font-size: 3rem;
+            font-weight: 900;
+            line-height: 1;
+            letter-spacing: -0.05em;
+            margin: 10px 0;
+        }
+
+        .result-note {
+            color: var(--muted);
+            font-size: 0.92rem;
+        }
+
+        /* Bars */
+
+        .bar-chart {
+            margin: 32px 0;
+            padding: 26px;
+            background: var(--surface-soft);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+        }
+
+        .bar-row {
+            margin-bottom: 22px;
+        }
+
+        .bar-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .bar-label {
+            display: flex;
+            justify-content: space-between;
+            font-weight: 700;
+            margin-bottom: 7px;
+        }
+
+        .bar-track {
+            width: 100%;
+            height: 18px;
+            border-radius: 999px;
+            background: #dbe3ef;
+            overflow: hidden;
+        }
+
+        .bar-fill {
+            height: 100%;
+            border-radius: inherit;
+        }
+
+        .bar-fill.baseline {
+            width: 80%;
+            background: #d97706;
+        }
+
+        .bar-fill.model {
+            width: 74%;
+            background: #2563eb;
+        }
+
+        /* Lists */
+
+        ul,
+        ol {
+            margin: 12px 0 20px 24px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Callouts */
+
+        .callout {
+            padding: 22px 24px;
+            border-radius: 15px;
+            border: 1px solid var(--border);
+            background: #f8fafc;
+            margin: 22px 0;
+        }
+
+        .callout.success {
+            border-color: #bbf7d0;
+            background: #f0fdf4;
+        }
+
+        .callout.warning {
+            border-color: #fed7aa;
+            background: #fff7ed;
+        }
+
+        .callout strong {
+            display: block;
+            margin-bottom: 6px;
+        }
+
+        /* Recommendation */
+
+        .recommendation {
+            padding: 24px;
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            margin: 16px 0;
+            background: var(--surface);
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 8px;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 5px 10px;
+            border-radius: 999px;
+            font-size: 0.78rem;
+            font-weight: 800;
+            background: #eef2ff;
+            color: #4338ca;
+        }
+
+        /* Code-ish */
+
+        .path {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 7px;
+            background: #eef2f7;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            font-size: 0.9em;
+        }
+
+        /* Footer */
+
+        footer {
+            border-top: 1px solid var(--border);
+            padding: 34px 0 50px;
+            color: var(--muted);
+        }
+
+        .footer-inner {
+            display: flex;
+            justify-content: space-between;
+            gap: 24px;
+            flex-wrap: wrap;
+        }
+
+        /* Responsive */
+
+        @media (max-width: 900px) {
+            .stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .grid-2,
+            .result-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-inner {
+                align-items: flex-start;
+                flex-direction: column;
+                padding: 14px 0;
+            }
+
+            .nav-links {
+                justify-content: flex-start;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                width: min(100% - 24px, var(--max-width));
+            }
+
+            .section-card {
+                padding: 24px;
+            }
+
+            .stats {
+                grid-template-columns: 1fr;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <div class="container nav-inner">
+        <a class="brand" href="#top">Search Intelligence Capstone</a>
+
+        <div class="nav-links">
+            <a href="#question">Question</a>
+            <a href="#data">Data</a>
+            <a href="#methodology">Methodology</a>
+            <a href="#results">Results</a>
+            <a href="#limitations">Limitations</a>
+            <a href="#recommendations">Recommendations</a>
+            <a href="#reproducibility">Reproducibility</a>
+        </div>
+    </div>
+</nav>
+
+<header class="hero" id="top">
+    <div class="container">
+        <div class="eyebrow">FlyRank ML Internship · Search Intelligence</div>
+
+        <h1>Can Machine Learning Improve Content Refresh Prioritization?</h1>
+
+        <p class="hero-subtitle">
+            A leakage-aware comparison of a transparent rule-based baseline
+            and a Random Forest ranking model for prioritizing content
+            review opportunities.
+        </p>
+
+        <div class="hero-meta">
+            <span class="pill">Lane: Refresh / Content Opportunity Scoring</span>
+            <span class="pill">Feature window: March 2026</span>
+            <span class="pill">Outcome window: April 2026</span>
+            <span class="pill">Metric: Precision@50</span>
+            <span class="pill">Validation: Client-group holdout</span>
+        </div>
+    </div>
+</header>
+
+<main>
+    <div class="container">
+
+        <!-- 1. TITLE + ABSTRACT -->
+        <section id="question">
+            <div class="section-card">
+                <div class="section-number">01 · Title + Abstract</div>
+                <h2>Abstract</h2>
+
+                <div class="abstract">
+                    <p>
+                        This study asks whether historical search-performance and
+                        content-freshness signals can help prioritize content items
+                        for refresh review. A Random Forest model uses March 2026
+                        historical features to rank content items against an April
+                        2026 impression-decline proxy. The model is compared with
+                        a transparent Week-4 baseline using the same client-held-out
+                        test set and Precision@50. The baseline achieved
+                        <strong>0.80 Precision@50</strong> while the Random Forest
+                        achieved <strong>0.74 Precision@50</strong>, so the tested
+                        ML approach did not improve on the simpler rule-based
+                        benchmark in this evaluation. The resulting evidence supports
+                        a human-reviewed decision-support workflow rather than an
+                        automatic refresh system.
+                    </p>
+                </div>
+
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-value">0.80</div>
+                        <div class="stat-label">Week-4 baseline Precision@50</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-value">0.74</div>
+                        <div class="stat-label">Random Forest Precision@50</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-value">10</div>
+                        <div class="stat-label">Held-out clients</div>
+                    </div>
+
+                    <div class="stat">
+                        <div class="stat-value">20,768</div>
+                        <div class="stat-label">Held-out content/client rows</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 2. INTRODUCTION / PROBLEM -->
+        <section id="problem">
+            <div class="section-card">
+                <div class="section-number">02 · Introduction / Problem Statement</div>
+                <h2>The decision behind the model</h2>
+
+                <p class="lead">
+                    SEO and content teams can have more pages available for review
+                    than they have time to inspect manually. The practical challenge
+                    is therefore not only predicting a future metric, but deciding
+                    which pages deserve attention first.
+                </p>
+
+                <div class="grid-2">
+                    <div class="info-card">
+                        <strong>Research question</strong>
+                        Can historical search-performance and content-freshness
+                        signals rank content items for refresh review, and does an
+                        ML-based ranking improve on a transparent rule?
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Decision supported</strong>
+                        Which content items should an SEO/content team review first
+                        when review capacity is limited?
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Unit of analysis</strong>
+                        One content item for one client.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Output</strong>
+                        A ranked opportunity score for human review, rather than an
+                        automatic instruction to refresh a page.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. DATA -->
+        <section id="data">
+            <div class="section-card">
+                <div class="section-number">03 · Data</div>
+                <h2>Real search data, explicit time windows</h2>
+
+                <p>
+                    This analysis uses the pseudonymized
+                    <strong>FlyRank ML Internship warehouse release</strong>.
+                    The primary source is the daily content-performance fact table,
+                    with content metadata supplied by the content dimension.
+                </p>
+
+                <div class="grid-2">
+                    <div class="info-card">
+                        <strong>Feature window</strong>
+                        March 2026
+                        <br>
+                        Information available through March 31 was used for prediction.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Outcome window</strong>
+                        April 2026
+                        <br>
+                        Used only to evaluate the future decline proxy.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>March → April pairs</strong>
+                        331,436 content/client observations with both feature and
+                        future-outcome data.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Future-decline proxy rate</strong>
+                        28.4% of the usable observations met the selected
+                        impression-decline definition.
+                    </div>
+                </div>
+
+                <h3>Target / proxy</h3>
+
+                <div class="callout">
+                    <strong>Decline proxy</strong>
+                    A content item is labeled as declining when
+                    <code>April impressions &lt; 0.80 × March impressions</code>.
+                    This is an observable performance proxy, not ground truth for
+                    whether a page genuinely needs a refresh.
+                </div>
+
+                <h3>Final model features</h3>
+
+                <ul>
+                    <li>March impressions</li>
+                    <li>March clicks</li>
+                    <li>March average position</li>
+                    <li>March organic sessions</li>
+                    <li>March days with impressions</li>
+                    <li>Days since last content update</li>
+                    <li>Word count</li>
+                </ul>
+
+                <h3>What was deliberately excluded</h3>
+
+                <p>
+                    Future outcome information, including April impressions and the
+                    derived target, was excluded from the predictors. Target-derived
+                    trend fields were also excluded from the final model feature set.
+                </p>
+
+                <p>
+                    No client names, domains, URLs, private queries, credentials,
+                    or raw private exports are included in this public paper.
+                </p>
+            </div>
+        </section>
+
+        <!-- 4. METHODOLOGY -->
+        <section id="methodology">
+            <div class="section-card">
+                <div class="section-number">04 · Methodology</div>
+                <h2>Simple baseline, then machine learning</h2>
+
+                <h3>Week-4 baseline</h3>
+
+                <p>
+                    The baseline is a transparent hand-written score combining
+                    historical negative trend and content staleness. It provides
+                    a simple benchmark that can be inspected and reproduced without
+                    a machine-learning model.
+                </p>
+
+                <h3>Random Forest</h3>
+
+                <p>
+                    The ML model is a Random Forest classifier. Its predicted
+                    probability of future decline is used as the ranking score.
+                    Model complexity was treated as a means to test whether multiple
+                    historical signals could improve prioritization, not as an
+                    objective by itself.
+                </p>
+
+                <h3>Validation design</h3>
+
+                <p>
+                    The final evaluation uses
+                    <strong>GroupShuffleSplit on client_hash_id</strong>.
+                    All content belonging to a held-out client remains in the test
+                    set. This makes the primary test more demanding than a random
+                    row split because the model is evaluated on clients it did not
+                    see during training.
+                </p>
+
+                <div class="callout warning">
+                    <strong>Why the grouped split matters</strong>
+                    The Week-6 audit measured Precision@50 of 0.80 under a random
+                    row split and 0.68 under a client-group split. The difference
+                    showed that random splitting can produce a more optimistic
+                    estimate when content from the same clients appears on both
+                    sides of the split.
+                </div>
+
+                <h3>Leakage control</h3>
+
+                <p>
+                    The target is based on April 2026 impressions, while the model
+                    predictors are restricted to March 2026 information and
+                    decision-time content metadata. Future outcome fields and
+                    target-derived fields were excluded.
+                </p>
+
+                <h3>Primary metric</h3>
+
+                <p>
+                    <strong>Precision@50</strong> is the primary metric because the
+                    practical use case is a limited review queue. The key question
+                    is how many of the highest-ranked 50 items meet the selected
+                    future-decline proxy.
+                </p>
+            </div>
+        </section>
+
+        <!-- 5. RESULTS -->
+        <section id="results">
+            <div class="section-card">
+                <div class="section-number">05 · Results</div>
+                <h2>The simpler benchmark won</h2>
+
+                <p class="lead">
+                    Both methods were evaluated on the same final client-held-out
+                    test set, using the same target and the same Precision@50 metric.
+                </p>
+
+                <div class="result-grid">
+                    <div class="result-card baseline">
+                        <div>Week-4 transparent baseline</div>
+                        <div class="result-number">0.80</div>
+                        <div class="result-note">
+                            Precision@50 on the final client-held-out evaluation.
+                        </div>
+                    </div>
+
+                    <div class="result-card model">
+                        <div>Random Forest</div>
+                        <div class="result-number">0.74</div>
+                        <div class="result-note">
+                            Precision@50 on the same held-out clients and outcome.
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bar-chart">
+                    <div class="bar-row">
+                        <div class="bar-label">
+                            <span>Week-4 baseline</span>
+                            <span>0.80</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill baseline"></div>
+                        </div>
+                    </div>
+
+                    <div class="bar-row">
+                        <div class="bar-label">
+                            <span>Random Forest</span>
+                            <span>0.74</span>
+                        </div>
+                        <div class="bar-track">
+                            <div class="bar-fill model"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="callout success">
+                    <strong>Main finding</strong>
+                    The transparent Week-4 baseline outperformed the tested Random
+                    Forest by <strong>0.06 Precision@50</strong> in the final
+                    client-group evaluation.
+                </div>
+
+                <h3>Interpretation</h3>
+
+                <p>
+                    The result does not support replacing the transparent baseline
+                    with the tested Random Forest for this experiment. Instead, it
+                    shows that a simple and interpretable rule can remain competitive
+                    with a more complex model when evaluated on unseen clients.
+                </p>
+
+                <p>
+                    This is an observed result for this feature set, proxy label,
+                    future window, and validation design. It is not a universal
+                    estimate of model performance.
+                </p>
+
+                <h3>Model interpretation from the earlier audit</h3>
+
+                <p>
+                    In the Week-5 model audit, the largest Random Forest feature
+                    importance values were associated with word count, average
+                    position, and March impressions. These values describe how the
+                    fitted model used the available features in that experiment;
+                    they do not establish that those features cause future declines.
+                </p>
+            </div>
+        </section>
+
+        <!-- 6. LIMITATIONS -->
+        <section id="limitations">
+            <div class="section-card">
+                <div class="section-number">06 · Limitations & Honest Framing</div>
+                <h2>What this study can — and cannot — claim</h2>
+
+                <div class="grid-2">
+                    <div class="info-card">
+                        <strong>Proxy target</strong>
+                        The target is an impression-decline proxy, not a ground-truth
+                        label for whether content genuinely needs refreshing.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Single outcome window</strong>
+                        March → April is one future window. It cannot establish
+                        stability across all future months.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Held-out clients</strong>
+                        The final test contains 10 held-out clients, so generalization
+                        evidence remains directional.
+                    </div>
+
+                    <div class="info-card">
+                        <strong>Observational data</strong>
+                        The analysis identifies measured associations and ranking
+                        signals, not causal effects of refreshing content.
+                    </div>
+                </div>
+
+                <h3>Model errors matter</h3>
+
+                <p>
+                    The Week-6 client-group audit produced both false positives and
+                    false negatives. Some false negatives were near the 0.50
+                    classification boundary, reinforcing that individual model
+                    outputs can be uncertain.
+                </p>
+
+                <h3>Safest interpretation</h3>
+
+                <p>
+                    The strongest defensible conclusion is that a transparent
+                    baseline was at least as useful as the tested Random Forest for
+                    this future-decline proxy and final client-group evaluation.
+                    The resulting score should therefore be treated as
+                    <strong>decision-support for human review</strong>, not as an
+                    autonomous content-refresh system.
+                </p>
+
+                <h3>Public-safe framing</h3>
+
+                <p>
+                    Nothing in this analysis should be read as proof of Google's
+                    ranking algorithm, proof of a causal refresh effect, or a
+                    guarantee that changing a page will increase search traffic.
+                </p>
+            </div>
+        </section>
+
+        <!-- 7. RANKED RECOMMENDATIONS -->
+        <section id="recommendations">
+            <div class="section-card">
+                <div class="section-number">07 · Ranked Recommendations</div>
+                <h2>From score to action</h2>
+
+                <p class="lead">
+                    The model output is best used as a human-reviewed prioritization
+                    queue. A high score moves a page earlier in the review process;
+                    it does not automatically determine the final editorial action.
+                </p>
+
+                <div class="recommendation">
+                    <div class="recommendation-header">
+                        <h3>Priority 1 — Review for refresh</h3>
+                        <span class="badge">DECLINE_REVIEW</span>
+                    </div>
+                    <p>
+                        Review high-scoring items that also have meaningful historical
+                        visibility. Check whether the content is actually outdated,
+                        incomplete, or losing relevance before making a change.
+                    </p>
+                </div>
+
+                <div class="recommendation">
+                    <div class="recommendation-header">
+                        <h3>Priority 2 — Review content depth</h3>
+                        <span class="badge">DEPTH_REVIEW</span>
+                    </div>
+                    <p>
+                        Where a visible page appears thin or incomplete, inspect its
+                        topic coverage and search intent before deciding whether
+                        additional depth is justified.
+                    </p>
+                </div>
+
+                <div class="recommendation">
+                    <div class="recommendation-header">
+                        <h3>Priority 3 — Monitor</h3>
+                        <span class="badge">MONITOR</span>
+                    </div>
+                    <p>
+                        Lower-priority items should remain in monitoring unless
+                        another independent signal justifies manual investigation.
+                    </p>
+                </div>
+
+                <h3>Human review rules</h3>
+
+                <ul>
+                    <li>Confirm that enough historical search data exists.</li>
+                    <li>Check whether the page still serves meaningful search intent.</li>
+                    <li>Determine whether the decline appears persistent rather than temporary.</li>
+                    <li>Inspect whether the content is genuinely stale, incomplete, or outdated.</li>
+                    <li>Consider alternative explanations before taking action.</li>
+                    <li>Choose an action proportionate to the measured opportunity.</li>
+                </ul>
+
+                <h3>No-go automation</h3>
+
+                <div class="callout warning">
+                    <strong>The score must not automatically:</strong>
+                    publish rewritten content, delete a page, merge pages, change
+                    search intent, declare content "bad," or claim that a refresh
+                    will increase traffic.
+                </div>
+
+                <h3>Decay / refresh insight</h3>
+
+                <p>
+                    The FlyRank research paper reports that content health was
+                    strongest around 61–90 days and declined in later age bands.
+                    It also reports that older content that was recently refreshed
+                    could perform similarly to younger, recently refreshed content.
+                    These are observational portfolio findings, not proof that age
+                    or refreshing alone causes better performance.
+                </p>
+
+                <p>
+                    The practical implication is to use age and freshness as review
+                    signals rather than automatic refresh triggers.
+                </p>
+            </div>
+        </section>
+
+        <!-- 8. REPRODUCIBILITY -->
+        <section id="reproducibility">
+            <div class="section-card">
+                <div class="section-number">08 · Reproducibility</div>
+                <h2>How to reproduce the work</h2>
+
+                <p>
+                    The capstone builds on the weekly notebooks and reconstructs
+                    its features from the pseudonymized FlyRank warehouse.
+                </p>
+
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Artifact</th>
+                                <th>Purpose</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="path">w01_research_question.ipynb</span></td>
+                                <td>Research question and lane framing</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w02_ml_task_framing.ipynb</span></td>
+                                <td>ML task, target, metric, and unit of analysis</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w03_data_contract.ipynb</span></td>
+                                <td>Warehouse grain, feature contract, and leakage trap</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w04_baseline_score.ipynb</span></td>
+                                <td>Transparent rule-based baseline</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w05_model.ipynb</span></td>
+                                <td>Initial ML model and baseline comparison</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w06_validation_audit.ipynb</span></td>
+                                <td>Grouped validation, leakage audit, and claim rewrite</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">w07_action_playbook.ipynb</span></td>
+                                <td>Ranked actions, human review, and monitoring</td>
+                            </tr>
+                            <tr>
+                                <td><span class="path">capstone.ipynb</span></td>
+                                <td>Final reproducible experiment and paper artifacts</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h3>Repository</h3>
+
+                <p>
+                    <a
+                        href="https://github.com/SaaDasim05/Flyrank-ML-Internship"
+                        target="_blank"
+                        rel="noopener"
+                    >
+                        View the GitHub repository
+                    </a>
+                </p>
+
+                <h3>Public-safe reproduction</h3>
+
+                <p>
+                    The public repository contains methodology, notebooks, figures,
+                    and metrics receipts. Generated queue data remains outside the
+                    repository data guard and is recreated by the notebook.
+                </p>
+            </div>
+        </section>
+
+        <!-- 9. ACKNOWLEDGMENTS + DATA CREDIT -->
+        <section id="acknowledgments">
+            <div class="section-card">
+                <div class="section-number">09 · Acknowledgments & Data Credit</div>
+                <h2>Data credit</h2>
+
+                <div class="callout success">
+                    <strong>Built on the FlyRank ML Internship dataset.</strong>
+
+                    <p>
+                        This project was completed as part of the FlyRank ML Internship
+                        and uses the internship's pseudonymized Search Intelligence
+                        warehouse release.
+                    </p>
+
+                    <p>
+                        <a
+                            href="https://flyrank.ai"
+                            target="_blank"
+                            rel="noopener"
+                        >
+                            FlyRank
+                        </a>
+                    </p>
+                </div>
+
+                <p>
+                    The study follows the internship's public-safety requirement:
+                    no client names, private queries, credentials, raw private
+                    exports, or claims of causal search-engine impact are presented.
+                </p>
+            </div>
+        </section>
+
+    </div>
+</main>
+
+<footer>
+    <div class="container footer-inner">
+        <div>
+            <strong>Search Intelligence Capstone</strong>
+            <br>
+            Refresh / Content Opportunity Scoring
+        </div>
+
+        <div>
+            Built on the FlyRank ML Internship dataset.
+        </div>
+    </div>
+</footer>
+
+</body>
+</html>
