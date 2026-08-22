@@ -1,0 +1,12 @@
+{
+  "model": "Random Forest",
+  "feature_window": "March 2026",
+  "outcome_window": "April 2026",
+  "target": "April impressions < 80% of March impressions",
+  "validation": "GroupShuffleSplit by client_hash_id",
+  "random_split_precision_at_50": 0.76,
+  "client_group_precision_at_50": 0.68,
+  "training_clients": 28,
+  "testing_clients": 10,
+  "testing_rows": 20768
+}
